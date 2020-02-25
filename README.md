@@ -1,2 +1,2 @@
 # inpainting
-Code to inpainting CMB 
+Code to inpaint CMB 
