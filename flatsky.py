@@ -64,6 +64,27 @@ def get_lxly_az_angle(lx,ly):
     return 2*np.arctan2(lx, -ly)
 
 ################################################################################################################
+def get_lpf_hpf(mapparams, lmin_lmax, filter_type = 0):
+    """
+    filter_type = 0 - low pass filter
+    filter_type = 1 - high pass filter
+    filter_type = 2 - band pass
+    """
+
+    lx, ly = get_lxly(mapparams)
+    ell = np.sqrt(lx**2. + ly**2.)
+    fft_filter = np.ones(ell.shape)
+    if filter_type == 0:
+        fft_filter[ell>lmin_lmax] = 0.
+    elif filter_type == 1:
+        fft_filter[ell<lmin_lmax] = 0.
+    elif filter_type == 2:
+        lmin, lmax = lmin_lmax
+        fft_filter[ell<lmin] = 0.
+        fft_filter[ell>lmax] = 0
+
+    return fft_filter
+################################################################################################################
 
 def cl2map(flatskymapparams, cl, el = None):
 
