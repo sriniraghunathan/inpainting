@@ -13,7 +13,8 @@ def get_bl(beamval, el, make_2d = 0, mapparams = None):
     fwhm_radians = np.radians(beamval/60.)
     sigma = fwhm_radians / np.sqrt(8. * np.log(2.))
     sigma2 = sigma ** 2
-    bl = np.exp(el * (el+1) * sigma2)
+    #bl = np.exp(el * (el+1) * sigma2)
+    bl = np.exp(-0.5 * el * (el+1) * sigma2)
 
     if make_2d:
         assert mapparams is not None
