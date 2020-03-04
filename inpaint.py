@@ -53,9 +53,9 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl, bl, nl, noofsims, mask_
     for n in range(noofsims):
 
         #cmb sim and beam
-        cmb_map = tools.make_gaussian_realisation(mapparams, el, cl, bl = bl)
+        cmb_map = flatsky.make_gaussian_realisation(mapparams, el, cl, bl = bl)
         #noise map
-        noise_map = tools.make_gaussian_realisation(mapparams, el, nl)
+        noise_map = flatsky.make_gaussian_realisation(mapparams, el, nl)
 
         sim_map = cmb_map + noise_map
         #imshow(sim_map);colorbar(); show()
@@ -161,8 +161,8 @@ def inpainting(map_to_inpaint, ra_grid, dec_grid, mapparams, el, cl, bl, nl, noo
 
     ############################################################
     #generate constrained Gaussia CMB realisation now
-    cmb_map = tools.make_gaussian_realisation(mapparams, el, cl, bl = bl) #cmb sim and beam
-    noise_map = tools.make_gaussian_realisation(mapparams, el, nl) #noise map
+    cmb_map = flatsky.make_gaussian_realisation(mapparams, el, cl, bl = bl) #cmb sim and beam
+    noise_map = flatsky.make_gaussian_realisation(mapparams, el, nl) #noise map
     constrained_sim_to_inpaint = cmb_map + noise_map #combined
     #lpf the map
     if low_pass_cutoff:
