@@ -64,14 +64,14 @@ def get_lxly_az_angle(lx,ly):
     return 2*np.arctan2(lx, -ly)
 
 ################################################################################################################
-def get_lpf_hpf(mapparams, lmin_lmax, filter_type = 0):
+def get_lpf_hpf(flatskymapparams, lmin_lmax, filter_type = 0):
     """
     filter_type = 0 - low pass filter
     filter_type = 1 - high pass filter
     filter_type = 2 - band pass
     """
 
-    lx, ly = get_lxly(mapparams)
+    lx, ly = get_lxly(flatskymapparams)
     ell = np.sqrt(lx**2. + ly**2.)
     fft_filter = np.ones(ell.shape)
     if filter_type == 0:
@@ -84,6 +84,23 @@ def get_lpf_hpf(mapparams, lmin_lmax, filter_type = 0):
         fft_filter[ell>lmax] = 0
 
     return fft_filter
+################################################################################################################
+
+def wiener_filter(mapparams, cl_signal, cl_noise, el = None):
+
+    if el is None:
+        el = np.arange(len(cl_signal))
+
+    nx, ny, dx, dx = flatskymapparams
+
+    #get 2D cl
+    cl_signal2d = cl_to_cl2d(el, cl_signal, flatskymapparams) 
+    cl_noise2d = cl_to_cl2d(el, cl_noise, flatskymapparams) 
+
+    wiener_filter = cl_signal2d / (cl_signal2d + cl_noise2d)
+
+    return wiener_filter
+
 ################################################################################################################
 
 def cl2map(flatskymapparams, cl, el = None):
@@ -223,7 +240,7 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, bl = N
     ################################################
 
     #1d to 2d now
-    cltwod = flatsky.cl_to_cl2d(el, cl, mapparams)
+    cltwod = cl_to_cl2d(el, cl, mapparams)
     
     ################################################
     if cl2 is not None: #for TE, etc. where two fields are correlated.
@@ -259,7 +276,7 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, bl = N
         SIM = np.fft.ifft2( SIM_FFT ).real
 
     if bl is not None:
-        if ndim(bl) != 2:
+        if np.ndim(bl) != 2:
             bl = flatsky.cl_to_cl2d(el, bl, mapparams)
         SIM = np.fft.ifft2( np.fft.fft2(SIM) * bl).real
 
