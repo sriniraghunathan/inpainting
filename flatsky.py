@@ -64,6 +64,22 @@ def get_lxly_az_angle(lx,ly):
     return 2*np.arctan2(lx, -ly)
 
 ################################################################################################################
+def convert_eb_qu(map1, map2, flatskymapparams, eb_to_qu = 1):
+
+    lx, ly = get_lxly(flatskymapparams)
+    angle = get_lxly_az_angle(lx,ly)
+
+    map1_fft, map2_fft = np.fft.fft2(map1),np.fft.fft2(map2)
+    if eb_to_qu:
+        map1_mod = np.fft.ifft2( np.cos(angle) * map1_fft - np.sin(angle) * map2_fft ).real
+        map2_mod = np.fft.ifft2( np.sin(angle) * map1_fft + np.cos(angle) * map2_fft ).real
+    else:
+        map1_mod = np.fft.ifft2( np.cos(angle) * map1_fft + np.sin(angle) * map2_fft ).real
+        map2_mod = np.fft.ifft2( -np.sin(angle) * map1_fft + np.cos(angle) * map2_fft ).real
+
+    return map1_mod, map2_mod
+################################################################################################################
+
 def get_lpf_hpf(flatskymapparams, lmin_lmax, filter_type = 0):
     """
     filter_type = 0 - low pass filter
@@ -112,7 +128,7 @@ def cl2map(flatskymapparams, cl, el = None):
     flatskymyapparams = [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
     for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
 
-    cl: input 1d cl power spectra
+    cl: 1d (T-only) or nd (TP) vector of cl: temp / pol. power spectra
 
     el: if None, then computed here.
 
@@ -226,7 +242,7 @@ def radial_profile(z, xy = None, bin_size = 1., minbin = 0., maxbin = 10., to_ar
 
 ################################################################################################################
 
-def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, bl = None):
+def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod=None, tf=None, bl = None, qu_or_eb = 'qu'):
 
     nx, ny, dx, dy = mapparams
     arcmins2radians = np.radians(1/60.)
@@ -239,14 +255,19 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, bl = N
     norm = np.sqrt(1./ (dx * dy))
     ################################################
 
-    #1d to 2d now
-    cltwod = cl_to_cl2d(el, cl, mapparams)
+    #if cltwod is given, directly use it, otherwise do 1d to 2d 
+    if cltwod is None:
+        cltwod = cl_to_cl2d(el, cl, mapparams)
+
+    # if the tranfer function is given, correct the 2D cl by tf
+    if tf is not None:
+        cltwod = cltwod * tf**2
     
     ################################################
     if cl2 is not None: #for TE, etc. where two fields are correlated.
         assert cl12 is not None
-        cltwod12 = flatsky.cl_to_cl2d(el, cl12, mapparams)
-        cltwod2 = flatsky.cl_to_cl2d(el, cl2, mapparams)
+        cltwod12 = cl_to_cl2d(el, cl12, mapparams)
+        cltwod2 = cl_to_cl2d(el, cl2, mapparams)
 
     ################################################
     if cl2 is None:
@@ -259,28 +280,52 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, bl = N
 
     else: #for TE, etc. where two fields are correlated.
 
+        assert qu_or_eb in ['qu', 'eb']
+
+        cltwod[np.isnan(cltwod)] = 0.
         cltwod12[np.isnan(cltwod12)] = 0.
         cltwod2[np.isnan(cltwod2)] = 0.
 
+        #in this case, generate two Gaussian random fields
+        #SIM_FIELD_1 will simply be generated from gauss_reals_1 like above
+        #SIM_FIELD_2 will generated from both gauss_reals_1, gauss_reals_2 using the cross spectra
         gauss_reals_1 = np.random.standard_normal([nx,ny])
         gauss_reals_2 = np.random.standard_normal([nx,ny])
 
-        gauss_reals_1 = np.fft.fft2( gauss_reals_1 )
-        gauss_reals_2 = np.fft.fft2( gauss_reals_2 )
+        gauss_reals_1_fft = np.fft.fft2( gauss_reals_1 )
+        gauss_reals_2_fft = np.fft.fft2( gauss_reals_2 )
 
-        t1 = gauss_reals_1 * cltwod12 / cltwod2**0.5
-        t2 = gauss_reals_2 * ( cltwod - (cltwod12**2. /cltwod2) )**0.5
+        #field_1
+        cltwod_tmp = np.copy( cltwod )**0.5 * norm
+        SIM_FIELD_1 = np.fft.ifft2( cltwod_tmp *  gauss_reals_1_fft ).real
+        #SIM_FIELD_1 = np.zeros( (ny, nx) )
 
-        SIM_FFT = (t1 + t2) * norm
-        SIM_FFT[np.isnan(SIM_FFT)] = 0.
-        SIM = np.fft.ifft2( SIM_FFT ).real
+        #field 2 - has correlation with field_1
+        t1 = np.copy( gauss_reals_1_fft ) * cltwod12 / np.copy(cltwod)**0.5
+        t2 = np.copy( gauss_reals_2_fft ) * ( cltwod2 - (cltwod12**2. /np.copy(cltwod)) )**0.5
+        SIM_FIELD_2_FFT = (t1 + t2) * norm
+        SIM_FIELD_2_FFT[np.isnan(SIM_FIELD_2_FFT)] = 0.
+        SIM_FIELD_2 = np.fft.ifft2( SIM_FIELD_2_FFT ).real
+
+        #T and E generated. B will simply be zeroes.
+        SIM_FIELD_3 = np.zeros( SIM_FIELD_2.shape )
+        if qu_or_eb == 'qu': #T, Q, U: convert E/B to Q/U.        
+            SIM_FIELD_2, SIM_FIELD_3 = convert_eb_qu(SIM_FIELD_2, SIM_FIELD_3, mapparams, eb_to_qu = 1)
+        else: #T, E, B: B will simply be zeroes
+            pass
+
+        SIM = np.asarray( [SIM_FIELD_1, SIM_FIELD_2, SIM_FIELD_3] )
 
     if bl is not None:
         if np.ndim(bl) != 2:
-            bl = flatsky.cl_to_cl2d(el, bl, mapparams)
+            bl = cl_to_cl2d(el, bl, mapparams)
         SIM = np.fft.ifft2( np.fft.fft2(SIM) * bl).real
 
-    SIM = SIM - np.mean(SIM)
+    if cl2 is None:
+        SIM = SIM - np.mean(SIM)
+    else:
+        for tqu in range(len(SIM)):
+            SIM[tqu] = SIM[tqu] - np.mean(SIM[tqu])
 
     return SIM
 
