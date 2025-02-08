@@ -142,7 +142,7 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsim
 
 #################################################################################
 
-def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, intrp_r1_before_lpf = 0, mask_inner = 0, sigma_dic = None, maxel_for_grad_filter=None, use_original=False):
+def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, intrp_r1_before_lpf = 0, mask_inner = 0, sigma_dic = None, maxel_for_grad_filter=None, use_original=False, use_cons_gau_sims = True):
 
     #print('\n\tperform inpainting')
     """
@@ -220,27 +220,30 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
     cmb_map = flatsky.make_gaussian_realisation(mapparams, el, cl, bl = bl) #cmb sim and beam
     noise_map = flatsky.make_gaussian_realisation(mapparams, el, nl) #noise map
     '''
-    if do_pol:
-        cmb_map = flatsky.make_gaussian_realisation(mapparams, el, cl_dic['TT'], cl2 = cl_dic['EE'], cl12 = cl_dic['TE'], bl = bl)
-        noise_map_T = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['T'])
-        noise_map_Q = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['P'])
-        noise_map_U = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['P'])
-        noise_map = np.asarray( [noise_map_T, noise_map_Q, noise_map_U] )
-    else:
-        cmb_map = np.asarray( [flatsky.make_gaussian_realisation(mapparams, el, cl_dic['TT'], bl = bl)] )
-        noise_map = np.asarray( [flatsky.make_gaussian_realisation(mapparams, el, nl_dic['T'])] )
+    if use_cons_gau_sims:
+        if do_pol:
+            cmb_map = flatsky.make_gaussian_realisation(mapparams, el, cl_dic['TT'], cl2 = cl_dic['EE'], cl12 = cl_dic['TE'], bl = bl)
+            noise_map_T = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['T'])
+            noise_map_Q = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['P'])
+            noise_map_U = flatsky.make_gaussian_realisation(mapparams, el, nl_dic['P'])
+            noise_map = np.asarray( [noise_map_T, noise_map_Q, noise_map_U] )
+        else:
+            cmb_map = np.asarray( [flatsky.make_gaussian_realisation(mapparams, el, cl_dic['TT'], bl = bl)] )
+            noise_map = np.asarray( [flatsky.make_gaussian_realisation(mapparams, el, nl_dic['T'])] )
 
-    constrained_sim_to_inpaint = cmb_map + noise_map #combined
-    #lpf the map
-    if low_pass_cutoff:
-        constrained_sim_to_inpaint = np.fft.ifft2( np.fft.fft2(constrained_sim_to_inpaint) * lpf ).real
+        constrained_sim_to_inpaint = cmb_map + noise_map #combined
+        #lpf the map
+        if low_pass_cutoff:
+            constrained_sim_to_inpaint = np.fft.ifft2( np.fft.fft2(constrained_sim_to_inpaint) * lpf ).real
 
-    if (0):
-        tr, tc = 1, len(tqukeys)
-        for tqucntr in range( tc ):
-            subplot(tr, tc, tqucntr + 1); imshow(constrained_sim_to_inpaint[tqucntr]); colorbar(); 
-        show(); 
-        #sys.exit()
+        if (0):
+            tr, tc = 1, len(tqukeys)
+            for tqucntr in range( tc ):
+                subplot(tr, tc, tqucntr + 1); imshow(constrained_sim_to_inpaint[tqucntr]); colorbar(); 
+            show(); 
+            #sys.exit()
+    else: #20241031
+        constrained_sim_to_inpaint = np.zeros_like(map_to_inpaint)
 
     ############################################################
     #get the pixel values in the inner and outer regions from the constrained realisation
