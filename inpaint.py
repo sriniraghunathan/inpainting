@@ -58,7 +58,7 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl, bl, nl, noofsims, mask_
         noise_map = flatsky.make_gaussian_realisation(mapparams, el, nl)
 
         sim_map = cmb_map + noise_map
-        #imshow(sim_map);colorbar(); show()
+        #imshow(sim_map);colorbar(); show(); sys.exit()
 
         ############################################################
         #lpf the map
@@ -116,7 +116,7 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl, bl, nl, noofsims, mask_
 
 def inpainting(map_to_inpaint, ra_grid, dec_grid, mapparams, el, cl, bl, nl, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, mask_inner = 0, sigma_dic = None):
 
-    print('\n\tperform inpainting')
+    #print('\n\tperform inpainting')
     """
     mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.
     """
@@ -168,6 +168,8 @@ def inpainting(map_to_inpaint, ra_grid, dec_grid, mapparams, el, cl, bl, nl, noo
     if low_pass_cutoff:
         constrained_sim_to_inpaint = np.fft.ifft2( np.fft.fft2(constrained_sim_to_inpaint) * lpf ).real
 
+    #imshow(constrained_sim_to_inpaint);colorbar(); show(); sys.exit()
+
     ############################################################
     #get the pixel values in the inner and outer regions from the constrained realisation
     t1_tilde = constrained_sim_to_inpaint[inds_inner[0], inds_inner[1]]
@@ -184,7 +186,10 @@ def inpainting(map_to_inpaint, ra_grid, dec_grid, mapparams, el, cl, bl, nl, noo
     inpainted_map[inds_inner[0], inds_inner[1]] = inpainted_t1
     #subplot(121);imshow(map_to_inpaint);colorbar(); subplot(122);imshow(inpainted_map);colorbar();show();sys.exit()
 
-    return inpainted_map, map_to_inpaint
+    cmb_inpainted_map = np.copy(map_to_inpaint)*0.
+    cmb_inpainted_map[inds_inner[0], inds_inner[1]] = inpainted_t1
+
+    return cmb_inpainted_map, inpainted_map, map_to_inpaint
 
 #################################################################################
 
