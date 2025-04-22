@@ -92,6 +92,8 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsim
 
     """
     Compute the covariance between regions R1 and R2 required for inpainting.
+    .. math::
+        \hat{T}_{1} = \\tilde{T}_{1} + {\\bf \hat{C}}_{12}  {\\bf \hat{C}}_{22}^{-1} (T_{2} - \\tilde{T}_{2})        
     
     Parameters
     ----------
@@ -245,6 +247,8 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
 
     """
     Perform inpainting. Can perform joint inpainting of T/Q/U maps using the cross-spectra between them.
+    .. math::
+        \hat{T}_{1} = \\tilde{T}_{1} + {\\bf \hat{C}}_{12}  {\\bf \hat{C}}_{22}^{-1} (T_{2} - \\tilde{T}_{2})        
     ###mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.
     
     Parameters
@@ -256,7 +260,7 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
         ra_grid in degrees or arcmins for the flatsky map.
     dec_grid: array
         dec_grid in degress or arcmins for the flatsky map.
-    flatskymyapparams: list
+    mapparams: list
         [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
         for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
     el: array
