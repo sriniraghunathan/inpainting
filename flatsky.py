@@ -4,20 +4,34 @@ import numpy as np, sys, os, scipy as sc, healpy as H
 #flat-sky routines
 ################################################################################################################
 
-def cl_to_cl2d(el, cl, flatskymapparams):
+def cl_to_cl2d(el, cl, flatskymapparams, left = 0., right = 0.):
 
     """
-    converts 1d_cl to 2d_cl
-    inputs:
-    el = el values over which cl is defined
-    cl = power spectra - cl
+    Interpolating a 1d power spectrum (cl) defined on multipoles (el) to 2D assuming azimuthal symmetry (i.e:) isotropy.
 
-    flatskymyapparams = [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
-    for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    Parameters
+    ----------
+    el: array
+        Multipoles over which the power spectrium is defined.
+    cl: array
+        1d power spectrum that needs to be interpolated on the 2D grid.
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    left: float
+        value to be used for interpolation outside of the range (lower side).
+        default is zero.
+    right: float
+        value to be used for interpolation outside of the range (higher side).
+        default is zero.
 
-    output:
-    2d_cl
+    Returns
+    -------
+    cl2d: array, shape is map_shape.
+        interpolated power spectrum on the 2D grid.
     """
+
+
     lx, ly = get_lxly(flatskymapparams)
     ell = np.sqrt(lx**2. + ly**2.)
 
@@ -30,13 +44,17 @@ def cl_to_cl2d(el, cl, flatskymapparams):
 def get_lxly(flatskymapparams):
 
     """
-    returns lx, ly based on the flatskymap parameters
-    input:
-    flatskymyapparams = [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
-    for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    return lx, ly modes (kx, ky Fourier modes) for a flatsky map grid.
+    
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
 
-    output:
-    lx, ly
+    Returns
+    -------
+    lx, ly: array, shape is map_shape.
     """
 
     nx, ny, dx, dx = flatskymapparams
