@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inpaint module &mdash; Inpainting  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tools module" href="tools.html" />
+    <link rel="prev" title="Flatsky module" href="flatsky.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Inpainting
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="flatsky.html">Flatsky module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Inpaint module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#inpaint.calccov"><code class="docutils literal notranslate"><span class="pre">calccov()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inpaint.get_covariance"><code class="docutils literal notranslate"><span class="pre">get_covariance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inpaint.get_mask_indices"><code class="docutils literal notranslate"><span class="pre">get_mask_indices()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inpaint.inpainting"><code class="docutils literal notranslate"><span class="pre">inpainting()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inpaint.masking_for_filtering"><code class="docutils literal notranslate"><span class="pre">masking_for_filtering()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Inpainting</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Inpaint module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/inpaint.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-inpaint">
+<span id="inpaint-module"></span><h1>Inpaint module<a class="headerlink" href="#module-inpaint" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="inpaint.calccov">
+<span class="sig-prename descclassname"><span class="pre">inpaint.</span></span><span class="sig-name descname"><span class="pre">calccov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noofsims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npixels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inpaint.calccov" title="Link to this definition"></a></dt>
+<dd><p>Computer pixel-pixel covarinace based on simulations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim_mat</strong> (<em>array</em>) – nd array multiple sim maps used for covariance.</p></li>
+<li><p><strong>noofsims</strong> (<em>int</em>) – number of simulations.</p></li>
+<li><p><strong>npixels</strong> (<em>int</em>) – Map dimension (number of pixels).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>cov</strong> – covarinace array.
+Same as np.cov(sim_mat).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inpaint.get_covariance">
+<span class="sig-prename descclassname"><span class="pre">inpaint.</span></span><span class="sig-name descname"><span class="pre">get_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noofsims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_inner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_outer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_pass_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxel_for_grad_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inpaint.get_covariance" title="Link to this definition"></a></dt>
+<dd><p>Compute the covariance between regions R1 and R2 required for inpainting.</p>
+<div class="math notranslate nohighlight">
+\[\hat{T}_{1} = \tilde{T}_{1} + {\bf \hat{C}}_{12}  {\bf \hat{C}}_{22}^{-1} (T_{2} - \tilde{T}_{2})\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra_grid</strong> (<em>array</em>) – ra_grid in degrees or arcmins for the flatsky map.</p></li>
+<li><p><strong>dec_grid</strong> (<em>array</em>) – dec_grid in degress or arcmins for the flatsky map.</p></li>
+<li><p><strong>mapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrum is defined.</p></li>
+<li><p><strong>cl_dic</strong> (<em>dict</em>) – Signal power spectra dictionary.
+Keys are “TT” for T-only inpainting;
+“TT”, “EE”, “TE” for T/Q/U inpainting.</p></li>
+<li><p><strong>bl</strong> (<em>array</em>) – 1d beam window function.
+Default is None. Used for smoothing the maps.</p></li>
+<li><p><strong>nl_dic</strong> (<em>dict</em>) – Noise power spectra dictionary.
+Keys are “TT” for T-only inpainting;
+“TT”, “EE”, “TE” for T/Q/U inpainting.</p></li>
+<li><p><strong>noofsims</strong> (<em>int</em>) – number of simulations used for covariance calculation.</p></li>
+<li><p><strong>mask_radius_inner</strong> (<em>float</em>) – Inner radius of region R1 to inpaint in arcmins.</p></li>
+<li><p><strong>mask_radius_outer</strong> (<em>float</em>) – Outer radius of region R2 to inpaint in arcmins.</p></li>
+<li><p><strong>low_pass_cutoff</strong> (<em>bool</em>) – Low pass filter the maps before inpainting.
+Default is True.</p></li>
+<li><p><strong>maxel_for_grad_filter</strong> (<em>int</em>) – lmax for the LPF above.
+Default is None in which it will be calculated based on the radius of the inner region.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sigma_dic</strong> – Covariance dictionary containing the covariance between R12, R22, and R22_inv.
+See the equation above.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict (Optional)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#inpaint.inpainting" title="inpaint.inpainting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inpainting</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inpaint.get_mask_indices">
+<span class="sig-prename descclassname"><span class="pre">inpaint.</span></span><span class="sig-name descname"><span class="pre">get_mask_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_inner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_outer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_arcmins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inpaint.get_mask_indices" title="Link to this definition"></a></dt>
+<dd><p>Get the pixel indices in regions R1 and R2 for inpainting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra_grid</strong> (<em>array</em>) – ra_grid in degrees or arcmins for the flatsky map.</p></li>
+<li><p><strong>dec_grid</strong> (<em>array</em>) – dec_grid in degress or arcmins for the flatsky map.</p></li>
+<li><p><strong>mask_radius_inner</strong> (<em>float</em>) – Inner radius of region R1 to inpaint in arcmins.</p></li>
+<li><p><strong>mask_radius_outer</strong> (<em>float</em>) – Outer radius of region R2 to inpaint in arcmins.</p></li>
+<li><p><strong>low_pass_cutoff</strong> (<em>bool</em>) – Low pass filter the maps before inpainting.
+Default is True.</p></li>
+<li><p><strong>square</strong> (<em>bool</em>) – if True, returns a square.
+else, returns a cirucalr region.
+Default is Circle.</p></li>
+<li><p><strong>in_arcmins</strong> (<em>bool</em>) – Supplied grid are in arcmins.
+default is True.
+If False, degrees is assumed and will be converted to arcmins.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>inds_inner</strong> (<em>array</em>) – pixel indices of the inner region R1.</p></li>
+<li><p><strong>inds_outer</strong> (<em>array</em>) – pixel indices of the outer region R2.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inpaint.inpainting">
+<span class="sig-prename descclassname"><span class="pre">inpaint.</span></span><span class="sig-name descname"><span class="pre">inpainting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_dic_to_inpaint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ra_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noofsims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_inner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius_outer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_pass_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxel_for_grad_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrp_r1_before_lpf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_inner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_dic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_original</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cons_gau_sims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inpaint.inpainting" title="Link to this definition"></a></dt>
+<dd><p>Perform inpainting. Can perform joint inpainting of T/Q/U maps using the cross-spectra between them.
+###mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.</p>
+<div class="math notranslate nohighlight">
+\[\hat{T}_{1} = \tilde{T}_{1} + {\bf \hat{C}}_{12}  {\bf \hat{C}}_{22}^{-1} (T_{2} - \tilde{T}_{2})\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_dic_to_inpaint</strong> (<em>dict</em>) – flatsky map dict to inpaint.
+Keys must be [“T”, “Q”, “U”].</p></li>
+<li><p><strong>ra_grid</strong> (<em>array</em>) – ra_grid in degrees or arcmins for the flatsky map.</p></li>
+<li><p><strong>dec_grid</strong> (<em>array</em>) – dec_grid in degress or arcmins for the flatsky map.</p></li>
+<li><p><strong>mapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrum is defined.</p></li>
+<li><p><strong>cl_dic</strong> (<em>dict</em>) – Signal power spectra dictionary.
+Keys are “TT” for T-only inpainting;
+“TT”, “EE”, “TE” for T/Q/U inpainting.</p></li>
+<li><p><strong>bl</strong> (<em>array</em>) – 1d beam window function.
+Default is None. Used for smoothing the maps.</p></li>
+<li><p><strong>nl_dic</strong> (<em>dict</em>) – Noise power spectra dictionary.
+Keys are “TT” for T-only inpainting;
+“TT”, “EE”, “TE” for T/Q/U inpainting.</p></li>
+<li><p><strong>noofsims</strong> (<em>int</em>) – number of simulations used for covariance calculation.</p></li>
+<li><p><strong>mask_radius_inner</strong> (<em>float</em>) – Inner radius of region R1 to inpaint in arcmins.</p></li>
+<li><p><strong>mask_radius_outer</strong> (<em>float</em>) – Outer radius of region R2 to inpaint in arcmins.</p></li>
+<li><p><strong>low_pass_cutoff</strong> (<em>bool</em>) – Low pass filter the maps before inpainting.
+Default is True.</p></li>
+<li><p><strong>maxel_for_grad_filter</strong> (<em>int</em>) – lmax for the LPF above.
+Default is None in which it will be calculated based on the radius of the inner region.</p></li>
+<li><p><strong>intrp_r1_before_lpf</strong> (<em>bool</em>) – Interpolate R1 before inpainting.
+Default is False.</p></li>
+<li><p><strong>mask_inner</strong> (<em>bool</em>) – Mask inner region before inpainting.
+Default is False.</p></li>
+<li><p><strong>sigma_dic</strong> (<em>dict</em><em> (</em><em>Optional</em><em>)</em>) – Covariance dictionary containing the covariance between R12, R22, and R22_inv.
+See the equation above.
+If None, this will be calculated on the fly.</p></li>
+<li><p><strong>use_original</strong> (<em>bool</em>) – Do not inpaint. Return the same map.
+Default is False.</p></li>
+<li><p><strong>use_cons_gau_sims</strong> (<em>bool</em>) – Use constrained Gaussian realisations or not.
+If False, fields with tilde will be set to zero and there will be no randomness.
+(i.e:) Just interpolate R1 based on R2 and the covariance.
+default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>cmb_inpainted_map</strong> (<em>array</em>) – inpainted CMB region. All pixels other than R1 will be zero in this map.</p></li>
+<li><p><strong>inpainted_map</strong> (<em>array</em>) – inpainted map.</p></li>
+<li><p><strong>map_to_inpaint</strong> (<em>array</em>) – original map used for inpainting.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#inpaint.get_covariance" title="inpaint.get_covariance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_covariance</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inpaint.masking_for_filtering">
+<span class="sig-prename descclassname"><span class="pre">inpaint.</span></span><span class="sig-name descname"><span class="pre">masking_for_filtering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taper_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apodise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_arcmins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inpaint.masking_for_filtering" title="Link to this definition"></a></dt>
+<dd><p>Mask regions before filtering. Returns an apodised (or binary) mask.
+Default values correspond to ACT/SPT/SO/CMB-S4-like beams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra_grid</strong> (<em>array</em>) – ra_grid in degrees or arcmins for the flatsky map.</p></li>
+<li><p><strong>dec_grid</strong> (<em>array</em>) – dec_grid in degress or arcmins for the flatsky map.</p></li>
+<li><p><strong>mask_radius</strong> (<em>float</em>) – radius for the masked region in arcmins.
+default is 2 arcmins.</p></li>
+<li><p><strong>taper_radius</strong> (<em>float</em>) – raptering radius in arcmins for the mask.
+default is 6 arcmins.</p></li>
+<li><p><strong>apodise</strong> (<em>bool</em>) – If True, apodises the mask. Otherwise, return a binary mask.
+Default is True.</p></li>
+<li><p><strong>in_arcmins</strong> (<em>bool</em>) – Supplied grid are in arcmins.
+default is True.
+If False, degrees is assumed and will be converted to arcmins.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mask</strong> – mask corresponding to the parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array, shape is ra_grid.shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="flatsky.html" class="btn btn-neutral float-left" title="Flatsky module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools.html" class="btn btn-neutral float-right" title="Tools module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Srini Raghunathan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

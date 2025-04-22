@@ -1,0 +1,401 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flatsky module &mdash; Inpainting  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Inpaint module" href="inpaint.html" />
+    <link rel="prev" title="Inpainting documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Inpainting
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Flatsky module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.cl2map"><code class="docutils literal notranslate"><span class="pre">cl2map()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.cl_to_cl2d"><code class="docutils literal notranslate"><span class="pre">cl_to_cl2d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.convert_eb_qu"><code class="docutils literal notranslate"><span class="pre">convert_eb_qu()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.get_lpf_hpf"><code class="docutils literal notranslate"><span class="pre">get_lpf_hpf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.get_lxly"><code class="docutils literal notranslate"><span class="pre">get_lxly()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.get_lxly_az_angle"><code class="docutils literal notranslate"><span class="pre">get_lxly_az_angle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.make_gaussian_realisation"><code class="docutils literal notranslate"><span class="pre">make_gaussian_realisation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.map2cl"><code class="docutils literal notranslate"><span class="pre">map2cl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.radial_profile"><code class="docutils literal notranslate"><span class="pre">radial_profile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatsky.wiener_filter"><code class="docutils literal notranslate"><span class="pre">wiener_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inpaint.html">Inpaint module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Inpainting</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Flatsky module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/flatsky.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-flatsky">
+<span id="flatsky-module"></span><h1>Flatsky module<a class="headerlink" href="#module-flatsky" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.cl2map">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">cl2map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.cl2map" title="Link to this definition"></a></dt>
+<dd><p>cl2map module - creates a flat sky map based on the flatskymap parameters and the input power spectra.
+Look into make_gaussian_realisation for a more general code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>cl</strong> (<em>array</em>) – 1d vector of Cl power spectra: temp / pol. power spectra</p></li>
+<li><p><strong>el</strong> (<em>array</em><em> (</em><em>optional</em><em>)</em>) – Multipole over which the signal / noise spectra are defined.
+Default is None and el will be np.arange( len(cl_signal) )</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flatskymap</strong> – flatskymap with the given underlying power spectrum cl.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#flatsky.make_gaussian_realisation" title="flatsky.make_gaussian_realisation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_gaussian_realisation</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.cl_to_cl2d">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">cl_to_cl2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.cl_to_cl2d" title="Link to this definition"></a></dt>
+<dd><p>Interpolating a 1d power spectrum (cl) defined on multipoles (el) to 2D assuming azimuthal symmetry (i.e:) isotropy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrium is defined.</p></li>
+<li><p><strong>cl</strong> (<em>array</em>) – 1d power spectrum that needs to be interpolated on the 2D grid.</p></li>
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>left</strong> (<em>float</em>) – value to be used for interpolation outside of the range (lower side).
+default is zero.</p></li>
+<li><p><strong>right</strong> (<em>float</em>) – value to be used for interpolation outside of the range (higher side).
+default is zero.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>cl2d</strong> – interpolated power spectrum on the 2D grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array, shape is (ny, nx).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.convert_eb_qu">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">convert_eb_qu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eb_to_qu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.convert_eb_qu" title="Link to this definition"></a></dt>
+<dd><p>Convert EB/QU into each other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map1</strong> (<em>array</em>) – flatsky map of E or Q.</p></li>
+<li><p><strong>map2</strong> (<em>array</em>) – flatsky map of B or U.</p></li>
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>eb_to_qu</strong> (<em>bool</em>) – Either EB–&gt;QU or QU–&gt;EB.
+Default is EB–&gt;QU.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>map1_mod</strong> (<em>array</em>) – flatsky map of E or Q.</p></li>
+<li><p><strong>map2_mod</strong> (<em>array</em>) – flatsky map of B or U.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.get_lpf_hpf">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_lpf_hpf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmin_lmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_lpf_hpf" title="Link to this definition"></a></dt>
+<dd><p>Get 2D Fourier filters. Supports low-pass (LPF), high-pass (HPF), and band-pass (BPF) filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>lmin_lmax</strong> (<em>list</em>) – Contains lmin and lmax values for the filters.
+For low-pass (LPF), lmax = lmin_lmax[0].
+For high-pass (HPF), lmin = lmin_lmax[0].
+For band-pass (BPF), lmin, lmax = lmin_lmax.</p></li>
+<li><p><strong>filter_type</strong> (<em>int</em>) – 0: LPF
+1: HPF
+2: BPF
+Default is LPF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>fft_filter</strong> – Requested 2D Fourier filter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.get_lxly">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_lxly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_lxly" title="Link to this definition"></a></dt>
+<dd><p>return lx, ly modes (kx, ky Fourier modes) for a flatsky map grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lx, ly</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array, shape is (ny, nx).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.get_lxly_az_angle">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_lxly_az_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ly</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_lxly_az_angle" title="Link to this definition"></a></dt>
+<dd><p>azimuthal angle from lx, ly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lx</strong> (<em>array</em>) – lx modes</p></li>
+<li><p><strong>ly</strong> (<em>array</em>) – ly modes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>phi</strong> – azimuthal angle</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.make_gaussian_realisation">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">make_gaussian_realisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl12</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cltwod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qu_or_eb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'qu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.make_gaussian_realisation" title="Link to this definition"></a></dt>
+<dd><p>Make gaussian realisation of flat sky map or 2maps based on the flatskymap parameters and the input power spectra.
+Look into cl2map for a simple version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrum is defined.</p></li>
+<li><p><strong>cl</strong> (<em>array</em>) – 1d vector of Cl auto-power spectra for map1.</p></li>
+<li><p><strong>cl2</strong> (<em>array</em><em> (</em><em>optional</em><em>)</em>) – 1d vector of Cl2 auto-power spectra for map2.
+Default is None. Used to generate correlated maps.</p></li>
+<li><p><strong>cl12</strong> (<em>array</em><em> (</em><em>optional</em><em>)</em>) – 1d vector of Cl2 cross-power spectra of map1 and map2.
+Default is None. Used to generate correlated maps.</p></li>
+<li><p><strong>cltwod</strong> (<em>array</em>) – 2D version of cl.
+Default is None. Computed using 1d vector assuming azimuthal symmetry.</p></li>
+<li><p><strong>tf</strong> (<em>array</em>) – 2D filtering.
+Default is None. Used to removed filtered modes.</p></li>
+<li><p><strong>bl</strong> (<em>array</em>) – 1d beam window function.
+Default is None. Used for smoothing the maps.</p></li>
+<li><p><strong>qu_or_eb</strong> (<em>array</em>) – Generates TQU or TEB maps if cl, cl2, cl12 are supplied.
+Default is ‘QU’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sim_map_arr</strong> – sim_map1: T-map.
+if cl2 and cl12 are provided:
+sim_map2: Q or E map.
+sim_map3: U or B map.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#flatsky.cl2map" title="flatsky.cl2map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cl2map</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.map2cl">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">map2cl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatskymapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.map2cl" title="Link to this definition"></a></dt>
+<dd><p>map2cl module - get the auto-/cross-power spectra of map/maps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>flatskymap1</strong> (<em>array</em>) – flatskymap1 with dimensions (ny, nx).</p></li>
+<li><p><strong>flatskymap2</strong> (<em>array</em><em> (</em><em>Optional</em><em>)</em>) – flatskymap2 with dimensions (ny, nx).
+Default is None.
+If None, compute the auto-spectrum of flatskymap1.
+If not None, compute the cross-spectrum between flatskymap1 and flatskymap2.</p></li>
+<li><p><strong>binsize</strong> (<em>int</em>) – el bins. computed automatically based on the fft grid spacing if None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrum is defined.</p></li>
+<li><p><strong>cl</strong> (<em>array</em>) – auto/cross power spectrum.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.radial_profile">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">radial_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_arcmins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.radial_profile" title="Link to this definition"></a></dt>
+<dd><p>get the radial profile of an image (both real and fourier space).
+Can be used to compute radial profile of stacked profiles or 2D power spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array</em>) – image to get the radial profile.</p></li>
+<li><p><strong>xy</strong> (<em>array</em>) – x and y grid. Same shape as the image z.
+Default is None.
+If None,
+x, y = np.indices(image.shape)</p></li>
+<li><p><strong>bin_size</strong> (<em>float</em>) – radial binning factor.
+default is 1.</p></li>
+<li><p><strong>minbin</strong> (<em>float</em>) – minimum bin for radial profile
+default is 0.</p></li>
+<li><p><strong>maxbin</strong> (<em>float</em>) – minimum bin for radial profile
+default is 10.</p></li>
+<li><p><strong>to_arcmins</strong> (<em>bool</em>) – If set, then xy are assumed to be in degrees and multipled by 60 to convert to arcmins.</p></li>
+<li><p><strong>get_errors</strong> (<em>bool</em>) – obtain scatter in each bin.
+This is not the error due to variance. Just the sample variance.
+Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>radprf</strong> – Array with three elements cotaining
+radprf[:,0] = radial bins
+radprf[:,1] = radial binned values
+if get_errors:
+radprf[:,2] = radial bin errors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsky.wiener_filter">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">wiener_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatskymyapparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_noise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.wiener_filter" title="Link to this definition"></a></dt>
+<dd><p>Get 2D Wiener filter.</p>
+<div class="math notranslate nohighlight">
+\[W(\ell) = \frac{ C_{\ell}^{\rm signal} } {C_{\ell}^{\rm signal} + C_{\ell}^{\rm noise}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flatskymyapparams</strong> (<em>list</em>) – [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+for example: [100, 100, 0.5, 0.5] is a 50’ x 50’ flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.</p></li>
+<li><p><strong>cl_signal</strong> (<em>array</em>) – Power spectrum of the signal component.</p></li>
+<li><p><strong>cl_noise</strong> (<em>array</em>) – Power spectrum of the noise component.</p></li>
+<li><p><strong>el</strong> (<em>array</em><em> (</em><em>optional</em><em>)</em>) – Multipole over which the signal / noise spectra are defined.
+Default is None and el will be np.arange( len(cl_signal) )</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>wiener_filter</strong> – 2D Wiener filter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Inpainting documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inpaint.html" class="btn btn-neutral float-right" title="Inpaint module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Srini Raghunathan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
