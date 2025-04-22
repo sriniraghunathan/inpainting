@@ -1,4 +1,2 @@
 sphinx-rtd-theme
---index-url https://pypi.python.org/simple/
-
 -e .
