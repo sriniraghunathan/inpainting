@@ -161,7 +161,7 @@ def cl2map(flatskymapparams, cl, el = None):
 
 ################################################################################################################
 
-def map2cl(flatskymapparams, flatskymap1, flatskymap2 = None, binsize = None, minbin = 100, maxbin = 10000):
+def map2cl(flatskymapparams, flatskymap1, flatskymap2 = None, binsize = None):
 
     """
     map2cl module - get the power spectra of map/maps
@@ -195,7 +195,7 @@ def map2cl(flatskymapparams, flatskymap1, flatskymap2 = None, binsize = None, mi
         assert flatskymap1.shape == flatskymap2.shape
         flatskymap_psd = np.fft.fft2(flatskymap1) * dx_rad * np.conj( np.fft.fft2(flatskymap2) ) * dx_rad / (nx * ny)
 
-    rad_prf = radial_profile(flatskymap_psd, (lx,ly), bin_size = binsize, minbin = minbin, maxbin = maxbin, to_arcmins = 0)
+    rad_prf = radial_profile(flatskymap_psd, (lx,ly), bin_size = binsize, minbin = 100, maxbin = 10000, to_arcmins = 0)
     el, cl = rad_prf[:,0], rad_prf[:,1]
 
     return el, cl
@@ -330,4 +330,3 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod
     return SIM
 
 ################################################################################################################
-
