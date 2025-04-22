@@ -73,16 +73,53 @@ def get_lxly_az_angle(lx,ly):
     """
     azimuthal angle from lx, ly
 
-    inputs:
-    lx, ly = 2d lx and ly arrays
+    Parameters
+    ----------
+    lx: array
+        lx modes
 
-    output:
-    azimuthal angle
+    ly: array
+        ly modes
+
+    Returns
+    -------
+    phi: array
+        azimuthal angle
     """
-    return 2*np.arctan2(lx, -ly)
+
+    phi = 2*np.arctan2(lx, -ly)
+    return phi
 
 ################################################################################################################
 def convert_eb_qu(map1, map2, flatskymapparams, eb_to_qu = 1):
+
+    """
+    Convert EB/QU into each other.
+
+    Parameters
+    ----------
+    map1: array
+        flatsky map of E or Q.
+
+    map2: array
+        flatsky map of B or U.
+
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+
+    eb_to_qu: bool
+        Either EB-->QU or QU-->EB.
+        Default is EB-->QU.
+
+    Returns
+    -------
+    map1_mod: array
+        flatsky map of E or Q.
+
+    map2_mod: array
+        flatsky map of B or U.
+    """
 
     lx, ly = get_lxly(flatskymapparams)
     angle = get_lxly_az_angle(lx,ly)
@@ -99,31 +136,83 @@ def convert_eb_qu(map1, map2, flatskymapparams, eb_to_qu = 1):
 ################################################################################################################
 
 def get_lpf_hpf(flatskymapparams, lmin_lmax, filter_type = 0):
+
     """
-    filter_type = 0 - low pass filter
-    filter_type = 1 - high pass filter
-    filter_type = 2 - band pass
+    Get 2D Fourier filters. Supports low-pass (LPF), high-pass (HPF), and band-pass (BPF) filters.
+
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+
+    lmin_lmax: list
+        Contains lmin and lmax values for the filters.
+        For low-pass (LPF), lmax = lmin_lmax[0].
+        For high-pass (HPF), lmin = lmin_lmax[0].
+        For band-pass (BPF), lmin, lmax = lmin_lmax.
+
+    filter_type: int
+        0: LPF
+        1: HPF
+        2: BPF
+        Default is LPF.
+
+    Returns
+    -------
+    fft_filter: array
+        Requested 2D Fourier filter.
     """
 
     lx, ly = get_lxly(flatskymapparams)
     ell = np.sqrt(lx**2. + ly**2.)
     fft_filter = np.ones(ell.shape)
     if filter_type == 0:
-        fft_filter[ell>lmin_lmax] = 0.
+        lmax = lmin_lmax[0]
+        fft_filter[ell>lmax] = 0.
     elif filter_type == 1:
-        fft_filter[ell<lmin_lmax] = 0.
+        lmin = lmin_lmax[0]
+        fft_filter[ell<lmin] = 0.
     elif filter_type == 2:
         lmin, lmax = lmin_lmax
         fft_filter[ell<lmin] = 0.
         fft_filter[ell>lmax] = 0
 
     return fft_filter
+
 ################################################################################################################
 
-def wiener_filter(mapparams, cl_signal, cl_noise, el = None):
+def wiener_filter(flatskymyapparams, cl_signal, cl_noise, el = None):
 
-    if el is None:
-        el = np.arange(len(cl_signal))
+    """
+    Get 2D Wiener filter.
+    .. math::
+        W(\ell) = \\frac{ C_{\ell}^{\rm signal} } {C_{\ell}^{\rm signal} + C_{\ell}^{\rm noise}}
+
+
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+
+    cl_signal: array
+        Power spectrum of the signal component.
+
+    cl_noise: array
+        Power spectrum of the noise component.
+
+    el: array (optional)
+        Multipole over which the signal / noise spectra are defined.
+        Default is None and el will be np.arange( len(cl_signal) )
+
+    Returns
+    -------
+    wiener_filter: array
+        2D Wiener filter.
+    """
+
+    if el is None: el = np.arange(len(cl_signal))
 
     nx, ny, dx, dx = flatskymapparams
 
@@ -140,23 +229,30 @@ def wiener_filter(mapparams, cl_signal, cl_noise, el = None):
 def cl2map(flatskymapparams, cl, el = None):
 
     """
-    cl2map module - creates a flat sky map based on the flatskymap parameters and the input power spectra
+    cl2map module - creates a flat sky map based on the flatskymap parameters and the input power spectra.
+    Look into make_gaussian_realisation for a more general code. 
 
-    input:
-    flatskymyapparams = [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
-    for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
 
-    cl: 1d (T-only) or nd (TP) vector of cl: temp / pol. power spectra
+    cl: array
+        1d vector of Cl power spectra: temp / pol. power spectra
 
-    el: if None, then computed here.
+    el: array (optional)
+        Multipole over which the signal / noise spectra are defined.
+        Default is None and el will be np.arange( len(cl_signal) )
 
-    output:
-    flatskymap with the given map specifications
+    Returns
+    -------
+    flatskymap: array
+        flatskymap with the given underlying power spectrum cl.
 
     """
 
-    if el is None:
-        el = np.arange(len(cl))
+    if el is None: el = np.arange(len(cl))
 
     nx, ny, dx, dx = flatskymapparams
 
@@ -182,21 +278,32 @@ def cl2map(flatskymapparams, cl, el = None):
 def map2cl(flatskymapparams, flatskymap1, flatskymap2 = None, binsize = None):
 
     """
-    map2cl module - get the power spectra of map/maps
+    map2cl module - get the auto-/cross-power spectra of map/maps
 
-    input:
-    flatskymyapparams = [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
-    for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
 
-    flatskymap1: map1 with dimensions (ny, nx)
-    flatskymap2: provide map2 with dimensions (ny, nx) cross-spectra
+    flatskymap1: array
+        flatskymap1 with dimensions (ny, nx).
 
-    binsize: el bins. computed automatically if None
+    flatskymap2: array (Optional)
+        flatskymap2 with dimensions (ny, nx).
+        Default is None.
+        If None, compute the auto-spectrum of flatskymap1.
+        If not None, compute the cross-spectrum between flatskymap1 and flatskymap2.
 
-    cross_power: if set, then compute the cross power between flatskymap1 and flatskymap2
+    binsize: int
+        el bins. computed automatically based on the fft grid spacing if None.
 
-    output:
-    auto/cross power spectra: [el, cl, cl_err]
+    Returns
+    -------
+    el: array
+        Multipoles over which the power spectrum is defined.
+    cl: array
+        auto/cross power spectrum.
     """
 
     nx, ny, dx, dx = flatskymapparams
@@ -220,10 +327,45 @@ def map2cl(flatskymapparams, flatskymap1, flatskymap2 = None, binsize = None):
 
 ################################################################################################################
 
-def radial_profile(z, xy = None, bin_size = 1., minbin = 0., maxbin = 10., to_arcmins = 1):
+def radial_profile(z, xy = None, bin_size = 1., minbin = 0., maxbin = 10., to_arcmins = 1, get_errors = 1):
 
     """
-    get the radial profile of an image (both real and fourier space)
+    get the radial profile of an image (both real and fourier space).
+    Can be used to compute radial profile of stacked profiles or 2D power spectrum.
+
+    Parameters
+    ----------
+    z: array
+        image to get the radial profile.
+    xy: array
+        x and y grid. Same shape as the image z.
+        Default is None.
+        If None, 
+        x, y = np.indices(image.shape)
+    bin_size: float
+        radial binning factor.
+        default is 1.
+    minbin: float
+        minimum bin for radial profile
+        default is 0.
+    maxbin: float
+        minimum bin for radial profile
+        default is 10.
+    to_arcmins: bool
+        If set, then xy are assumed to be in degrees and multipled by 60 to convert to arcmins.
+    get_errors: bool
+        obtain scatter in each bin.
+        This is not the error due to variance. Just the sample variance.
+        Default is True.
+
+    Returns
+    -------
+    radprf: array.
+        Array with three elements cotaining
+        radprf[:,0] = radial bins
+        radprf[:,1] = radial binned values
+        if get_errors:
+        radprf[:,2] = radial bin errors.
     """
 
     z = np.asarray(z)
@@ -254,7 +396,8 @@ def radial_profile(z, xy = None, bin_size = 1., minbin = 0., maxbin = 10., to_ar
     hit_count=np.asarray(hit_count)
     std_mean=np.sum(radprf[:,2]*hit_count)/np.sum(hit_count)
     errval=std_mean/(hit_count)**0.5
-    radprf[:,2]=errval
+    if get_errors:
+        radprf[:,2]=errval
 
     return radprf
 
@@ -262,6 +405,55 @@ def radial_profile(z, xy = None, bin_size = 1., minbin = 0., maxbin = 10., to_ar
 
 def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod=None, tf=None, bl = None, qu_or_eb = 'qu'):
 
+    """
+    Make gaussian realisation of flat sky map or 2maps based on the flatskymap parameters and the input power spectra.
+    Look into cl2map for a simple version.
+
+    Parameters
+    ----------
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+
+    el: array
+        Multipoles over which the power spectrum is defined.
+
+    cl: array
+        1d vector of Cl auto-power spectra for map1.
+
+    cl2: array (optional)
+        1d vector of Cl2 auto-power spectra for map2.
+        Default is None. Used to generate correlated maps.
+
+    cl12: array (optional)
+        1d vector of Cl2 cross-power spectra of map1 and map2.
+        Default is None. Used to generate correlated maps.
+
+    cltwod: array
+        2D version of cl. 
+        Default is None. Computed using 1d vector assuming azimuthal symmetry.
+
+    tf: array
+        2D filtering. 
+        Default is None. Used to removed filtered modes.
+
+    bl: array
+        1d beam window function. 
+        Default is None. Used for smoothing the maps.
+
+    qu_or_eb: array
+        Generates TQU or TEB maps if cl, cl2, cl12 are supplied.
+        Default is 'QU'.
+
+    Returns
+    -------
+    sim_map_arr: array.
+        sim_map1: T-map.
+        if cl2 and cl12 are provided:
+        sim_map2: Q or E map.
+        sim_map3: U or B map.
+        
+    """
     nx, ny, dx, dy = mapparams
     arcmins2radians = np.radians(1/60.)
 
@@ -305,8 +497,8 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod
         cltwod2[np.isnan(cltwod2)] = 0.
 
         #in this case, generate two Gaussian random fields
-        #SIM_FIELD_1 will simply be generated from gauss_reals_1 like above
-        #SIM_FIELD_2 will generated from both gauss_reals_1, gauss_reals_2 using the cross spectra
+        #sim_field_1 will simply be generated from gauss_reals_1 like above
+        #sim_field_2 will generated from both gauss_reals_1, gauss_reals_2 using the cross spectra
         gauss_reals_1 = np.random.standard_normal([nx,ny])
         gauss_reals_2 = np.random.standard_normal([nx,ny])
 
@@ -315,36 +507,36 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod
 
         #field_1
         cltwod_tmp = np.copy( cltwod )**0.5 * norm
-        SIM_FIELD_1 = np.fft.ifft2( cltwod_tmp *  gauss_reals_1_fft ).real
-        #SIM_FIELD_1 = np.zeros( (ny, nx) )
+        sim_field_1 = np.fft.ifft2( cltwod_tmp *  gauss_reals_1_fft ).real
+        #sim_field_1 = np.zeros( (ny, nx) )
 
         #field 2 - has correlation with field_1
         t1 = np.copy( gauss_reals_1_fft ) * cltwod12 / np.copy(cltwod)**0.5
         t2 = np.copy( gauss_reals_2_fft ) * ( cltwod2 - (cltwod12**2. /np.copy(cltwod)) )**0.5
-        SIM_FIELD_2_FFT = (t1 + t2) * norm
-        SIM_FIELD_2_FFT[np.isnan(SIM_FIELD_2_FFT)] = 0.
-        SIM_FIELD_2 = np.fft.ifft2( SIM_FIELD_2_FFT ).real
+        sim_field_2_fft = (t1 + t2) * norm
+        sim_field_2_fft[np.isnan(sim_field_2_fft)] = 0.
+        sim_field_2 = np.fft.ifft2( sim_field_2_fft ).real
 
         #T and E generated. B will simply be zeroes.
-        SIM_FIELD_3 = np.zeros( SIM_FIELD_2.shape )
+        sim_field_3 = np.zeros( sim_field_2.shape )
         if qu_or_eb == 'qu': #T, Q, U: convert E/B to Q/U.        
-            SIM_FIELD_2, SIM_FIELD_3 = convert_eb_qu(SIM_FIELD_2, SIM_FIELD_3, mapparams, eb_to_qu = 1)
+            sim_field_2, sim_field_3 = convert_eb_qu(sim_field_2, sim_field_3, mapparams, eb_to_qu = 1)
         else: #T, E, B: B will simply be zeroes
             pass
 
-        SIM = np.asarray( [SIM_FIELD_1, SIM_FIELD_2, SIM_FIELD_3] )
+        sim_map_arr = np.asarray( [sim_field_1, sim_field_2, sim_field_3] )
 
     if bl is not None:
         if np.ndim(bl) != 2:
             bl = cl_to_cl2d(el, bl, mapparams)
-        SIM = np.fft.ifft2( np.fft.fft2(SIM) * bl).real
+        sim_map_arr = np.fft.ifft2( np.fft.fft2(sim_map_arr) * bl).real
 
     if cl2 is None:
-        SIM = SIM - np.mean(SIM)
+        sim_map_arr = sim_map_arr - np.mean(sim_map_arr)
     else:
-        for tqu in range(len(SIM)):
-            SIM[tqu] = SIM[tqu] - np.mean(SIM[tqu])
+        for tqu in range(len(sim_map_arr)):
+            sim_map_arr[tqu] = sim_map_arr[tqu] - np.mean(sim_map_arr[tqu])
 
-    return SIM
+    return sim_map_arr
 
 ################################################################################################################
