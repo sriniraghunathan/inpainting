@@ -1,6 +1,8 @@
 # Inpainting
-### Code to inpaint CMB
---
+## Documentation: https://inpainting.readthedocs.io/en/latest/index.html
+
+### Code for CMB inpainting
+
 ### Eliminating SZ-induced bias in CMB(-cluster) lensing reconstruction.
 This code was originally developed to modify the standard CMB (cosmic microwave background) lensing quadratic estimator (QE) used to reconstruct the lensing of the CMB by galaxy clusters --**inpainted gradient QE**--. Reference: **arXiv: [1904.13392](https://arxiv.org/abs/1904.13392).**
 
