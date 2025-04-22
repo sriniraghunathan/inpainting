@@ -12,8 +12,7 @@ def get_blsqinv(beamval, el, make_2d = 0, mapparams = None):
 
     """
     Get the inverse of the beam window function sqaured.
-    Returns 1/Bl^2.
-
+   
     Parameters
     ----------
     beamval: float
@@ -52,8 +51,9 @@ def get_nl(noiseval_in_ukarcmin, el, beamval = None, elknee_t = -1, alpha_knee =
     """
     Get the noise power spectra: White and 1/f spectrum.
     Can return beam deconvolved nl if desired.
+
     .. math::
-        P(f) = A^2 \left[ 1+ \left( \\frac{\ell_{\\rm knee}}{\ell}\\right)^{\\alpha_{\\rm knee}} \\right].
+        P(f) = A^2 \\left[ 1+ \\left( \\frac{\\ell_{\\rm knee}}{\\ell}\\right)^{\\alpha_{\\rm knee}} \\right].
 
     Parameters
     ----------

@@ -186,8 +186,9 @@ def wiener_filter(flatskymyapparams, cl_signal, cl_noise, el = None):
 
     """
     Get 2D Wiener filter.
+
     .. math::
-        W(\ell) = \\frac{ C_{\ell}^{\rm signal} } {C_{\ell}^{\rm signal} + C_{\ell}^{\rm noise}}
+        W(\\ell) = \\frac{ C_{\\ell}^{\\rm signal} } {C_{\\ell}^{\\rm signal} + C_{\\ell}^{\\rm noise}}
 
 
     Parameters
