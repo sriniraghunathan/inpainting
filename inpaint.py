@@ -136,6 +136,10 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsim
     sigma_dic: dict (Optional)
         Covariance dictionary containing the covariance between R12, R22, and R22_inv. 
         See the equation above.
+
+    See Also
+    -------
+    inpainting
     """
 
     print('\n\tcalculating the covariance from simulations for inpainting')
@@ -317,6 +321,10 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
         inpainted map.
     map_to_inpaint: array
         original map used for inpainting.
+
+    See Also
+    -------
+    get_covariance
     """
     
     ############################################################

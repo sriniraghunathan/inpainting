@@ -251,6 +251,9 @@ def cl2map(flatskymapparams, cl, el = None):
     flatskymap: array
         flatskymap with the given underlying power spectrum cl.
 
+    See Also
+    -------
+    make_gaussian_realisation
     """
 
     if el is None: el = np.arange(len(cl))
@@ -446,6 +449,9 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod
         sim_map2: Q or E map.
         sim_map3: U or B map.
         
+    See Also
+    -------
+    cl2map
     """
     nx, ny, dx, dy = mapparams
     arcmins2radians = np.radians(1/60.)
