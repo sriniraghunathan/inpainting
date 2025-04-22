@@ -27,7 +27,7 @@ def cl_to_cl2d(el, cl, flatskymapparams, left = 0., right = 0.):
 
     Returns
     -------
-    cl2d: array, shape is map_shape.
+    cl2d: array, shape is (ny, nx).
         interpolated power spectrum on the 2D grid.
     """
 
@@ -54,7 +54,7 @@ def get_lxly(flatskymapparams):
 
     Returns
     -------
-    lx, ly: array, shape is map_shape.
+    lx, ly: array, shape is (ny, nx).
     """
 
     nx, ny, dx, dx = flatskymapparams
@@ -414,33 +414,25 @@ def make_gaussian_realisation(mapparams, el, cl, cl2 = None, cl12 = None, cltwod
     flatskymyapparams: list
         [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
         for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
-
     el: array
         Multipoles over which the power spectrum is defined.
-
     cl: array
         1d vector of Cl auto-power spectra for map1.
-
     cl2: array (optional)
         1d vector of Cl2 auto-power spectra for map2.
         Default is None. Used to generate correlated maps.
-
     cl12: array (optional)
         1d vector of Cl2 cross-power spectra of map1 and map2.
         Default is None. Used to generate correlated maps.
-
     cltwod: array
         2D version of cl. 
         Default is None. Computed using 1d vector assuming azimuthal symmetry.
-
     tf: array
         2D filtering. 
         Default is None. Used to removed filtered modes.
-
     bl: array
         1d beam window function. 
         Default is None. Used for smoothing the maps.
-
     qu_or_eb: array
         Generates TQU or TEB maps if cl, cl2, cl12 are supplied.
         Default is 'QU'.
