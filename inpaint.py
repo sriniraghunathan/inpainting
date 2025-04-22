@@ -1,6 +1,6 @@
 import numpy as np, os, flatsky, tools
 import scipy as sc
-from pylab import *
+#from pylab import *
 
 #################################################################################
 #################################################################################
@@ -93,6 +93,9 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsim
     """
     Compute the covariance between regions R1 and R2 required for inpainting.
     
+    .. math::
+        \\hat{T}_{1} = \\tilde{T}_{1} + {\\bf \\hat{C}}_{12}  {\\bf \\hat{C}}_{22}^{-1} (T_{2} - \\tilde{T}_{2})        
+
     Parameters
     ----------
     ra_grid: array
@@ -247,6 +250,9 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
     Perform inpainting. Can perform joint inpainting of T/Q/U maps using the cross-spectra between them.
     ###mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.
     
+    .. math::
+        \\hat{T}_{1} = \\tilde{T}_{1} + {\\bf \\hat{C}}_{12}  {\\bf \\hat{C}}_{22}^{-1} (T_{2} - \\tilde{T}_{2})        
+
     Parameters
     ----------
     map_dic_to_inpaint: dict

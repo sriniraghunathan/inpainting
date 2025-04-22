@@ -2,7 +2,7 @@ import numpy as np, os, flatsky
 import scipy as sc
 import scipy.ndimage as ndimage
 
-from pylab import *
+#from pylab import *
 
 #################################################################################
 #################################################################################
