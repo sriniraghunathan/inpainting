@@ -1,0 +1,57 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter C
+  \item \spxentry{calccov()}\spxextra{in module inpaint}, \hyperpage{7}
+  \item \spxentry{cl2map()}\spxextra{in module flatsky}, \hyperpage{1}
+  \item \spxentry{cl\_to\_cl2d()}\spxextra{in module flatsky}, \hyperpage{1}
+  \item \spxentry{convert\_eb\_qu()}\spxextra{in module flatsky}, \hyperpage{2}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{flatsky}
+    \subitem \spxentry{module}, \hyperpage{1}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_blsqinv()}\spxextra{in module tools}, \hyperpage{11}
+  \item \spxentry{get\_covariance()}\spxextra{in module inpaint}, \hyperpage{7}
+  \item \spxentry{get\_lpf\_hpf()}\spxextra{in module flatsky}, \hyperpage{2}
+  \item \spxentry{get\_lxly()}\spxextra{in module flatsky}, \hyperpage{2}
+  \item \spxentry{get\_lxly\_az\_angle()}\spxextra{in module flatsky}, \hyperpage{2}
+  \item \spxentry{get\_mask\_indices()}\spxextra{in module inpaint}, \hyperpage{8}
+  \item \spxentry{get\_nl()}\spxextra{in module tools}, \hyperpage{11}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{inpaint}
+    \subitem \spxentry{module}, \hyperpage{7}
+  \item \spxentry{inpainting()}\spxextra{in module inpaint}, \hyperpage{8}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{make\_gaussian\_realisation()}\spxextra{in module flatsky}, \hyperpage{3}
+  \item \spxentry{map2cl()}\spxextra{in module flatsky}, \hyperpage{3}
+  \item \spxentry{masking\_for\_filtering()}\spxextra{in module inpaint}, \hyperpage{9}
+  \item \spxentry{module}
+    \subitem \spxentry{flatsky}, \hyperpage{1}
+    \subitem \spxentry{inpaint}, \hyperpage{7}
+    \subitem \spxentry{tools}, \hyperpage{11}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{radial\_profile()}\spxextra{in module flatsky}, \hyperpage{4}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{tools}
+    \subitem \spxentry{module}, \hyperpage{11}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{wiener\_filter()}\spxextra{in module flatsky}, \hyperpage{4}
+
+\end{sphinxtheindex}
