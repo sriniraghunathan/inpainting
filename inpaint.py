@@ -8,15 +8,69 @@ from pylab import *
 
 def calccov(sim_mat, noofsims, npixels):
     
+    """
+    Computer pixel-pixel covarinace based on simulations.
+
+    Parameters
+    ----------
+    sim_mat: array
+        nd array multiple sim maps used for covariance.
+    noofsims: int
+        number of simulations.
+    npixels: int
+        Map dimension (number of pixels).
+
+
+    Returns
+    -------
+    cov: array
+        covarinace array. 
+        Same as np.cov(sim_mat).
+    """
+
     m = sim_mat.flatten().reshape(noofsims,npixels)
     m = np.mat( m ).T
     mt = m.T
 
-    cov = (m * mt) / (noofsims)# - 1)
+    #cov = (m * mt) / (noofsims)# - 1)
+    cov = (m * mt) / (noofsims - 1)
     return cov
 
 #################################################################################
 def get_mask_indices(ra_grid, dec_grid, mask_radius_inner, mask_radius_outer, square = 0, in_arcmins = 1):
+
+    """
+    Get the pixel indices in regions R1 and R2 for inpainting.
+    
+    Parameters
+    ----------
+    ra_grid: array
+        ra_grid in degrees or arcmins for the flatsky map.
+    dec_grid: array
+        dec_grid in degress or arcmins for the flatsky map.
+    mask_radius_inner: float
+        Inner radius of region R1 to inpaint in arcmins.
+    mask_radius_outer: float
+        Outer radius of region R2 to inpaint in arcmins.
+    low_pass_cutoff: bool
+        Low pass filter the maps before inpainting. 
+        Default is True.
+    square: bool
+        if True, returns a square. 
+        else, returns a cirucalr region. 
+        Default is Circle.
+    in_arcmins: bool
+        Supplied grid are in arcmins. 
+        default is True.
+        If False, degrees is assumed and will be converted to arcmins.
+
+    Returns
+    -------
+    inds_inner: array
+        pixel indices of the inner region R1.
+    inds_outer: array
+        pixel indices of the outer region R2.
+    """
 
     if not in_arcmins:
         ra_grid = ra_grid * 60.
@@ -35,6 +89,51 @@ def get_mask_indices(ra_grid, dec_grid, mask_radius_inner, mask_radius_outer, sq
 
 #################################################################################
 def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, maxel_for_grad_filter = None):
+
+    """
+    Compute the covariance between regions R1 and R2 required for inpainting.
+    
+    Parameters
+    ----------
+    ra_grid: array
+        ra_grid in degrees or arcmins for the flatsky map.
+    dec_grid: array
+        dec_grid in degress or arcmins for the flatsky map.
+    mapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    el: array
+        Multipoles over which the power spectrum is defined.
+    cl_dic: dict
+        Signal power spectra dictionary.
+        Keys are "TT" for T-only inpainting;
+        "TT", "EE", "TE" for T/Q/U inpainting.
+    bl: array
+        1d beam window function. 
+        Default is None. Used for smoothing the maps.
+    nl_dic: dict
+        Noise power spectra dictionary.
+        Keys are "TT" for T-only inpainting;
+        "TT", "EE", "TE" for T/Q/U inpainting.
+    noofsims: int
+        number of simulations used for covariance calculation.
+    mask_radius_inner: float
+        Inner radius of region R1 to inpaint in arcmins.
+    mask_radius_outer: float
+        Outer radius of region R2 to inpaint in arcmins.
+    low_pass_cutoff: bool
+        Low pass filter the maps before inpainting. 
+        Default is True.
+    maxel_for_grad_filter: int
+        lmax for the LPF above.
+        Default is None in which it will be calculated based on the radius of the inner region.
+
+    Returns
+    -------
+    sigma_dic: dict (Optional)
+        Covariance dictionary containing the covariance between R12, R22, and R22_inv. 
+        See the equation above.
+    """
 
     print('\n\tcalculating the covariance from simulations for inpainting')
 
@@ -142,13 +241,78 @@ def get_covariance(ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsim
 
 #################################################################################
 
-def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, intrp_r1_before_lpf = 0, mask_inner = 0, sigma_dic = None, maxel_for_grad_filter=None, use_original=False, use_cons_gau_sims = True):
+def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl, nl_dic, noofsims, mask_radius_inner, mask_radius_outer, low_pass_cutoff = 1, maxel_for_grad_filter=None, intrp_r1_before_lpf = 0, mask_inner = 0, sigma_dic = None, use_original=False, use_cons_gau_sims = True):
 
-    #print('\n\tperform inpainting')
     """
-    mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.
-    """
+    Perform inpainting. Can perform joint inpainting of T/Q/U maps using the cross-spectra between them.
+    ###mask_inner = 1: The inner region is masked before the LPF. Might be useful in the presence of bright SZ signal at the centre.
+    
+    Parameters
+    ----------
+    map_dic_to_inpaint: dict
+        flatsky map dict to inpaint. 
+        Keys must be ["T", "Q", "U"]. 
+    ra_grid: array
+        ra_grid in degrees or arcmins for the flatsky map.
+    dec_grid: array
+        dec_grid in degress or arcmins for the flatsky map.
+    flatskymyapparams: list
+        [nx, ny, dx, dy] where ny, nx = flatskymap.shape; and dy, dx are the pixel resolution in arcminutes.
+        for example: [100, 100, 0.5, 0.5] is a 50' x 50' flatskymap that has dimensions 100 x 100 with dx = dy = 0.5 arcminutes.
+    el: array
+        Multipoles over which the power spectrum is defined.
+    cl_dic: dict
+        Signal power spectra dictionary.
+        Keys are "TT" for T-only inpainting;
+        "TT", "EE", "TE" for T/Q/U inpainting.
+    bl: array
+        1d beam window function. 
+        Default is None. Used for smoothing the maps.
+    nl_dic: dict
+        Noise power spectra dictionary.
+        Keys are "TT" for T-only inpainting;
+        "TT", "EE", "TE" for T/Q/U inpainting.
+    noofsims: int
+        number of simulations used for covariance calculation.
+    mask_radius_inner: float
+        Inner radius of region R1 to inpaint in arcmins.
+    mask_radius_outer: float
+        Outer radius of region R2 to inpaint in arcmins.
+    low_pass_cutoff: bool
+        Low pass filter the maps before inpainting. 
+        Default is True.
+    maxel_for_grad_filter: int
+        lmax for the LPF above.
+        Default is None in which it will be calculated based on the radius of the inner region.
+    intrp_r1_before_lpf: bool
+        Interpolate R1 before inpainting.
+        Default is False.
+    mask_inner: bool
+        Mask inner region before inpainting.
+        Default is False.
+    sigma_dic: dict (Optional)
+        Covariance dictionary containing the covariance between R12, R22, and R22_inv. 
+        See the equation above.
+        If None, this will be calculated on the fly.
+    use_original: bool
+        Do not inpaint. Return the same map.
+        Default is False.
+    use_cons_gau_sims: bool
+        Use constrained Gaussian realisations or not.
+        If False, fields with tilde will be set to zero and there will be no randomness.
+        (i.e:) Just interpolate R1 based on R2 and the covariance.
+        default is True.
 
+    Returns
+    -------
+    cmb_inpainted_map: array
+        inpainted CMB region. All pixels other than R1 will be zero in this map.
+    inpainted_map: array
+        inpainted map.
+    map_to_inpaint: array
+        original map used for inpainting.
+    """
+    
     ############################################################
     #get covariance
     if sigma_dic is None:
@@ -296,7 +460,37 @@ def inpainting(map_dic_to_inpaint, ra_grid, dec_grid, mapparams, el, cl_dic, bl,
 
 #################################################################################
 
-def masking_for_filtering(ra_grid, dec_grid, mask_radius = 2., taper_radius = 6., in_arcmins = 1):
+def masking_for_filtering(ra_grid, dec_grid, mask_radius = 2., taper_radius = 6., apodise = True, in_arcmins = True):
+
+    """
+    Mask regions before filtering. Returns an apodised (or binary) mask.
+    Default values correspond to ACT/SPT/SO/CMB-S4-like beams.
+
+    Parameters
+    ----------
+    ra_grid: array
+        ra_grid in degrees or arcmins for the flatsky map.
+    dec_grid: array
+        dec_grid in degress or arcmins for the flatsky map.
+    mask_radius: float
+        radius for the masked region in arcmins.
+        default is 2 arcmins. 
+    taper_radius: float
+        raptering radius in arcmins for the mask. 
+        default is 6 arcmins.
+    apodise: bool
+        If True, apodises the mask. Otherwise, return a binary mask.
+        Default is True.
+    in_arcmins: bool
+        Supplied grid are in arcmins. 
+        default is True.
+        If False, degrees is assumed and will be converted to arcmins.
+
+    Returns
+    -------
+    mask: array, shape is ra_grid.shape.
+        mask corresponding to the parameter. 
+    """
 
     import scipy as sc
     import scipy.ndimage as ndimage
@@ -308,15 +502,14 @@ def masking_for_filtering(ra_grid, dec_grid, mask_radius = 2., taper_radius = 6.
     radius = np.sqrt( (ra_grid_arcmins**2. + dec_grid_arcmins**2.) )
 
     mask = np.ones( ra_grid_arcmins.shape )
-    if (1): #20180118
-        ##print '\n\n\t\t fixing masking radius to %s\n\n' %mask_ra_gridDIUS_ARCMINS
-        inds_to_mask = np.where((radius<=mask_radius)) #2arcmins - fix this for now
-        mask[inds_to_mask[0], inds_to_mask[1]] = 0.
+    inds_to_mask = np.where((radius<=mask_radius))
+    mask[inds_to_mask[0], inds_to_mask[1]] = 0.
 
-    ker=np.hanning(taper_radius)
-    ker2d=np.asarray( np.sqrt(np.outer(ker,ker)) )
+    if apodise:
+        ker=np.hanning(taper_radius)
+        ker2d=np.asarray( np.sqrt(np.outer(ker,ker)) )
 
-    mask=ndimage.convolve(mask, ker2d)
-    mask/=mask.max()
+        mask=ndimage.convolve(mask, ker2d)
+        mask/=mask.max()
 
     return mask
