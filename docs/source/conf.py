@@ -16,6 +16,7 @@ extensions = [
     'sphinx.ext.autodoc',        # To generate autodocs
     'sphinx.ext.mathjax',           # autodoc with maths
     'sphinx.ext.napoleon'           # For auto-doc configuration
+    'sphinx.ext.graphviz',
 ]
 
 napoleon_google_docstring = False   # Turn off googledoc strings
@@ -25,7 +26,14 @@ napoleon_use_ivar = True         # For maths symbology
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# The suffix(es) of source filenames.
+# You can specify multiple suffix as a list of string:
+#
+source_suffix = ['.rst', '.md']
+#source_suffix = '.rst'
 
+# The master toctree document.
+master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
