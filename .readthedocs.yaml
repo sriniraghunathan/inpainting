@@ -12,4 +12,4 @@ formats:
   - pdf
 
 sphinx:
-  configuration: docs/conf.py
+  configuration: docs/source/conf.py
