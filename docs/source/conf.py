@@ -3,7 +3,9 @@
 
 import os, sys
 
-sys.path.insert( 0, os.path.abspath('../../') ) #this is important to point out that the codes are outisde of the docs folder.
+project = "inpainting"
+
+sys.path.insert( 0, os.path.abspath('../../{project}') ) #this is important to point out that the codes are outisde of the docs folder.
 
 project = 'Inpainting'
 copyright = '2025, Srini Raghunathan'
