@@ -1,5 +1,5 @@
 # Inpainting
-## [readthedocs-documentation](https://inpainting.readthedocs.io/en/latest/index.html)
+## [readthedocs-documentation](https://CMB-inpainting.readthedocs.io/en/latest/index.html)
 
 ## Code for CMB inpainting
 
