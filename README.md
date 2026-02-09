@@ -17,7 +17,7 @@
 * Check this notebook:
   * [cobaya-run yamls/examples/so_baseline_TTEETEPP_w0walcdmsampler.yaml](https://github.com/sriniraghunathan/inpainting/blob/master/example_Tonly.ipynb)
 
-### Application:
+## Application:
 #### Eliminating SZ-induced bias in CMB(-cluster) lensing reconstruction.
 This code was originally developed to modify the standard CMB (cosmic microwave background) lensing quadratic estimator (QE) used to reconstruct the lensing of the CMB by galaxy clusters --**inpainted gradient QE**--. Reference: **arXiv: [1904.13392](https://arxiv.org/abs/1904.13392).**
 
