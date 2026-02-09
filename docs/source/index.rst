@@ -6,6 +6,10 @@
 Inpainting documentation
 ========================
 
+This repository contains code to "inpaint" maps of the cosmic microwave background (CMB) maps at the location of bright point sources / galaxy clusters.
+
+This offers support to jointly-inpaint temperatue and polarisation maps; and also multi-freqeuncy maps. 
+
 .. toctree::
    :maxdepth: 4
 
