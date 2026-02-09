@@ -10,7 +10,7 @@
 ---
 ## Requirements
 * Should get automatically installed on doing `pip install .`. 
-* `astropy`, `cobaya>=3.5`, `pyparsing>=2.0.2`, `camb>=1.5`
+* `camb>=1.5`
 * Also, requires the standard python packages like `numpy`, `scipy`, etc.
 ---
 ## Example
